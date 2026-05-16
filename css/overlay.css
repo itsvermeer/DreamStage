@@ -1,0 +1,357 @@
+/* === DreamStage Full‑Screen Layout (BabyMonster Edition) === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #000;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  overflow: hidden;
+  height: 100vh;
+}
+
+/* Full‑screen background div for in‑game images */
+#game-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+/* Full‑screen 3D canvas container */
+#stage-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: transparent !important;
+}
+
+#stage-container canvas {
+  background: transparent !important;
+}
+
+/* ---------- Full‑screen overlays (menus) ---------- */
+#global-overlays {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.full-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: auto;
+  color: #fff;
+
+  /* Dark overlay with a subtle red tint */
+  background-color: rgba(5, 0, 0, 0.6);
+  background-image: none;   /* we removed the old menu background image */
+}
+
+.full-overlay h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  color: #fff;
+  text-shadow: 0 0 40px rgba(255, 0, 50, 0.9);
+}
+
+.full-overlay .subtitle {
+  color: #ccc;
+  margin-bottom: 2rem;
+  letter-spacing: 2px;
+}
+
+/* ---------- Buttons – BabyMonster Red Style ---------- */
+.full-overlay button,
+.popup button {
+  padding: 0.8rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  border: 2px solid #ff0033;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #cc0022, #990011);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin: 0.3rem;
+  box-shadow: 0 0 18px rgba(255, 0, 50, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.full-overlay button:hover,
+.popup button:hover {
+  background: linear-gradient(180deg, #ff1a3c, #cc0022);
+  box-shadow: 0 0 30px rgba(255, 0, 50, 0.9);
+  transform: translateY(-2px);
+}
+
+.full-overlay button:active,
+.popup button:active {
+  transform: scale(0.95);
+  box-shadow: 0 0 14px rgba(255, 0, 50, 0.9);
+}
+
+/* Multiplayer locked button */
+#btn-multiplayer {
+  border-color: #555;
+  background: #333;
+  box-shadow: none;
+  color: #aaa;
+}
+
+#btn-multiplayer:hover {
+  background: #444;
+  box-shadow: none;
+}
+
+/* Character selection grid */
+#char-select-screen h2 {
+  font-size: 2rem;
+  color: #fff;
+  margin-bottom: 1.5rem;
+}
+
+#char-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 80%;
+  max-width: 400px;
+}
+
+.char-btn {
+  background: rgba(20, 0, 0, 0.8);
+  border: 2px solid #ff0033;
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #fff;
+  box-shadow: 0 0 10px rgba(255, 0, 50, 0.3);
+}
+
+.char-btn:hover {
+  background: rgba(40, 0, 0, 0.9);
+  border-color: #ff3355;
+  transform: scale(1.05);
+  box-shadow: 0 0 22px rgba(255, 0, 50, 0.7);
+}
+
+.char-btn:active {
+  transform: scale(0.95);
+}
+
+.char-name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 0.3rem;
+}
+
+.char-buff {
+  font-size: 0.8rem;
+  color: #ff9999;
+}
+
+/* Pop‑ups (Settings, About, Multiplayer) */
+.popup {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  background: #0f0010;
+  border: 2px solid #ff0033;
+  border-radius: 16px;
+  padding: 2rem;
+  color: #fff;
+  text-align: center;
+  pointer-events: auto;
+  z-index: 110;
+  min-width: 280px;
+  box-shadow: 0 0 30px rgba(255, 0, 50, 0.4);
+}
+
+.popup h3 { margin-bottom: 1rem; color: #ff0033; }
+.popup label { display: block; margin: 1rem 0; color: #ddd; }
+.popup input[type=range] { width: 100%; }
+.popup input[type=checkbox] { margin-right: 0.5rem; }
+
+/* ---------- Game HUD (overlaid on canvas) ---------- */
+#hud {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 10;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 1rem;
+}
+
+.song-name {
+  text-align: center;
+  font-size: 1rem;
+  color: #ff0033;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px rgba(255,0,50,0.7);
+}
+
+.hud-top {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 600px;
+  padding: 0.5rem 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid #ff0033;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  font-weight: bold;
+  pointer-events: auto;
+}
+
+/* Arrow lanes – red/pink neon */
+#arrow-lanes {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  pointer-events: auto;
+}
+
+.lane {
+  width: 70px;
+  height: 300px;
+  background: rgba(30, 0, 0, 0.3);
+  border: 2px solid rgba(255, 0, 50, 0.4);
+  border-radius: 12px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  overflow: hidden;
+  transition: all 0.12s ease-out;
+}
+
+.lane span {
+  font-size: 1.8rem;
+  color: rgba(255, 200, 200, 0.7);
+  margin-bottom: 8px;
+  z-index: 1;
+  text-shadow: 0 0 10px #ff0033;
+}
+
+.hit-zone {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30%;
+  background: rgba(255, 0, 50, 0.2);
+  border-top: 2px solid #ff0033;
+  z-index: 0;
+}
+
+.arrow {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 0 16px #ff0033;
+  pointer-events: none;
+  z-index: 5;
+  transition: top 0.05s linear;
+}
+
+/* Judgment popup – BabyMonster neon palette */
+.judgment-popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.5rem;
+  font-weight: bold;
+  pointer-events: none;
+  animation: pop 0.6s ease-out;
+  z-index: 10;
+}
+
+@keyframes pop {
+  0% { transform: translate(-50%, -50%) scale(0.4); opacity: 1; }
+  100% { transform: translate(-50%, -80%) scale(0.8); opacity: 0; }
+}
+
+/* ── Lane press flash (red version) ── */
+.lane.key-pressed {
+  border-color: #ff0033;
+  background: rgba(255, 0, 50, 0.25);
+  box-shadow:
+    0 0 22px rgba(255, 0, 50, 0.9),
+    inset 0 0 16px rgba(255, 255, 255, 0.15);
+  transform: scale(1.06);
+}
+
+.lane.key-pressed span {
+  color: #fff;
+  text-shadow: 0 0 20px #ff0033;
+}
+
+.key-burst {
+  position: absolute;
+  left: 50%;
+  bottom: 22%;
+  transform: translateX(-50%);
+  font-size: 2.4rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 0 22px #ff0033;
+  pointer-events: none;
+  z-index: 20;
+  animation: keyBurst 0.28s ease-out forwards;
+}
+
+@keyframes keyBurst {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) scale(0.65);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-34px) scale(1.25);
+  }
+}
+
+#result-screen h2 { font-size: 2rem; }
+#result-stats { margin: 1rem 0; line-height: 1.8; }
+
+.hidden { display: none !important; }
